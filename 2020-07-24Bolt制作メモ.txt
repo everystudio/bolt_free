@@ -1,0 +1,140 @@
+2020-07-24Bolt制作メモ.txt
+
+Unity AssetStoreからBoltをダウンロード
+
+Boltをimportする（購入アップデートなど、必要に応じて対応してください）
+
+importが完了したらツールバーの
+Tools>Install Bolt
+ダイアログのimportボタンを押す
+
+Setupウインドが立ち上がるので
+
+
+
+インストール完了
+
+3D>Cubeを作成
+CubeにAddComponent [FlowMachine]を追加します
+FlowMachineの設定を変更します。
+Source>Embedに変更
+
+EditGraphtを選択します
+
+Graphが立ち上がるのを確認してください。
+
+まずは、キューブが回転する処理を実装してみましょう。
+グラフ内で右クリック＞Add Unit
+Codebase>UnityEnginge>Transform/Rotate(axis,angle)
+
+axis (0,1,0)
+angle 1
+
+Updateの右側の矢印と、Rotateの左側の矢印をつなぐ
+うまくつながったら、Unityを起動して、Cubeが自転することを確認しましょう。
+
+次は、スペースボタンを押している最中に加速する処理を実装してみましょう。
+
+Selectを使って、angleに1or5が入る処理を作る
+
+
+if(GetKey(Space)){
+	Rotate(5);
+}
+else {
+	Rotate(1);
+}
+
+
+float speed = 0.0f;
+if( GetKey(Space)){
+	speed = 5.0f;
+}
+else {
+	speed = 1.0f;
+}
+
+Rotate(speed);
+
+アニメーションと連携させてみましょう
+
+CubeにAdd Component > Animatorを追加してください
+追加できたらWindow>Animation>Animationを立ち上げてください
+
+タイムラインのビューにあるCreateボタンを押して、idleという名前のアニメーションを追加してください。
+（追加後はCubeというAnimationControlも作成されます）
+
+アニメーションはシンプルなものを作成します
+録画ボタンを押す（開始）
+0.3の時間で、localscaleを(1.2,1.2,1.2)
+1.0の時間で、localscaleを(1,1,1)
+録画ボタンを押す（終了）
+
+変更用のアニメーションを追加する
+Create New Clip > tallというアニメーションを追加
+0.3の時間で、localscaleを(0.8,2,0.8)
+1.0の時間で、localscaleを(1,1,1)
+録画ボタンを押す（終了）
+
+Animatorビューを開く(Window>Animaton>Animator)
+Parametersに変数を追加
+bool / tall 
+
+アニメーション間のTransitionを追加します
+各アニメーションで右クリックをして、MakeTransitionを選択して、別のアニメーションの上でクリック
+２つの間が矢印でつながるのを確認してください
+
+一つつながったら、双方向に矢印が作られるようにもう片方のTransitionも作成してください
+（合計２本）
+
+Transitionが２本作れたら、各設定を行います。
+
+idle>tallのTransitionを選択して、インスペクターを確認
+Has Exit Timeのチェックをはずす
+Conditionsを追加(tallがtrueの場合)
+
+tall>idleのTransitionを選択して、インスペクターを確認
+Has Exit Timeのチェックをはずす
+Conditionsを追加(tallがfalseの場合)
+
+
+
+Flow Graphに戻って、アニメーションの制御処理を実装しましょう
+
+右クリックのAdd Unit >Codebase>UnityEngine>Animator>SetBool(name,value)
+name : tall
+value : InputGetKey(Z)
+
+アニメーションの準備が出来たら、Rotateの右側矢印とSetBoolの左側をつなぐ
+
+
+プログラムっぽいことが出来るのはこれでわかった
+
+次は変数を使って、回転のスピードを入力数に応じて変更してみましょう
+
+まずは変数の種類の説明
+Graph変数
+Object変数
+Scene変数
+App変数
+Saved変数
+
+今回はGraph変数を使います
+
+speedという変数名を追加
+型はfloat
+
+Startで初期化する
+
+AddUnitのウインドをだして、setspeedと入力。
+０を代入して初期化する。
+Startの右側矢印とつなぐ
+
+
+もともとのRotateのangleから線を引っ張って、Unitを追加する
+追加するUnitはgetspeedで取得できるUnitにしてください
+（先程追加した変数を参照するUnitが自動的に作られます）
+
+これから実装するものは、すぺーすボタンが押されたら、speedが１早くなるという処理を実装します。
+
+
